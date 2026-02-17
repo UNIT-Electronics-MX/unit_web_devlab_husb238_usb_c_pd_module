@@ -1,0 +1,80 @@
+name: Deploy docs to gh-pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configurar Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Crear y desplegar a gh-pages
+        run: |
+          # Crear rama gh-pages si no existe
+          git checkout --orphan gh-pages || git checkout gh-pages
+          
+          # Limpiar todo excepto docs/
+          git rm -rf . 2>/dev/null || true
+          
+          # Checkout solo la carpeta docs/ desde main
+          git checkout main -- docs/
+          
+          # Mover contenido de docs/ a la raíz
+          mv docs/* .
+          rm -rf docs/
+          
+          # Crear .nojekyll si no existe
+          touch .nojekyll
+          
+          # Crear README para gh-pages
+          cat > README.md << 'EOF'
+# HUSB238 Web Bluetooth - GitHub Pages
+
+Esta rama contiene el sitio web desplegado automáticamente desde la rama `main`.
+
+## 🔗 URLs
+
+- **Aplicación principal**: [index-husb238.html](index-husb238.html)
+- **Test BLE rápido**: [test-ble.html](test-ble.html)
+- **Diagrama del sistema**: [diagrama.html](diagrama.html)
+
+## 🔄 Despliegue automático
+
+Los cambios en la carpeta `docs/` de la rama `main` se despliegan automáticamente a esta rama mediante GitHub Actions.
+
+Última actualización: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+EOF
+          
+          # Agregar todos los cambios
+          git add -A
+          
+          # Commit y push
+          git commit -m "Deploy: Actualización automática desde main @ $(git rev-parse --short main)" || echo "No hay cambios para desplegar"
+          git push origin gh-pages --force
+
+      - name: Resumen del despliegue
+        run: |
+          echo "✅ Despliegue completado"
+          echo "📦 Rama: gh-pages"
+          echo "🌐 URL: https://unit-electronics-mx.github.io/unit_web_devlab_husb238_usb_c_pd_module/"
+          echo ""
+          echo "Archivos desplegados:"
+          git ls-files
