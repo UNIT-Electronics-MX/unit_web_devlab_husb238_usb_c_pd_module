@@ -30,8 +30,8 @@
 #include <BLE2902.h>
 
 // Configuración de pines I2C
-#define I2C_SDA 6
-#define I2C_SCL 7
+#define I2C_SDA 12
+#define I2C_SCL 22
 
 // UUIDs para el servicio BLE
 #define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
@@ -47,6 +47,9 @@ bool deviceConnected = false;
 bool oldDeviceConnected = false;
 String cmd = "";
 String bleCommandBuffer = "";
+
+// Forward declaration
+void handleSCPI(String c, bool viaBLE);
 
 // ========================================
 // CALLBACKS BLE
@@ -65,17 +68,16 @@ class MyServerCallbacks: public BLEServerCallbacks {
 
 class CommandCallbacks: public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic *pCharacteristic) {
-    std::string value = pCharacteristic->getValue();
+    uint8_t* data = pCharacteristic->getData();
+    size_t len = pCharacteristic->getLength();
     
-    if (value.length() > 0) {
-      for (int i = 0; i < value.length(); i++) {
-        char ch = value[i];
-        if (ch == '\n') {
-          handleSCPI(bleCommandBuffer, true); // true = respuesta via BLE
-          bleCommandBuffer = "";
-        } else {
-          bleCommandBuffer += ch;
-        }
+    for (size_t i = 0; i < len; i++) {
+      char ch = (char)data[i];
+      if (ch == '\n') {
+        handleSCPI(bleCommandBuffer, true); // true = respuesta via BLE
+        bleCommandBuffer = "";
+      } else {
+        bleCommandBuffer += ch;
       }
     }
   }
@@ -128,35 +130,44 @@ void setup() {
 
   // Inicializar BLE
   Serial.print("Inicializando BLE... ");
+  
+  // Crear dispositivo BLE
   BLEDevice::init("HUSB238");
   
   // Crear servidor BLE
   pServer = BLEDevice::createServer();
   pServer->setCallbacks(new MyServerCallbacks());
 
-  // Crear servicio BLE
-  BLEService *pService = pServer->createService(SERVICE_UUID);
+  // Crear servicio BLE con BLEUUID explícito
+  BLEService *pService = pServer->createService(BLEUUID(SERVICE_UUID));
 
-  // Característica de comandos (Write)
+  // Crear característica de comandos (Write)
   pCommandCharacteristic = pService->createCharacteristic(
-    COMMAND_CHAR_UUID,
-    BLECharacteristic::PROPERTY_WRITE
-  );
+                           BLEUUID(COMMAND_CHAR_UUID),
+                           BLECharacteristic::PROPERTY_WRITE
+                         );
   pCommandCharacteristic->setCallbacks(new CommandCallbacks());
 
-  // Característica de respuestas (Read/Notify)
+  // Crear característica de respuestas (Read/Notify)
   pResponseCharacteristic = pService->createCharacteristic(
-    RESPONSE_CHAR_UUID,
-    BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY
-  );
+                         BLEUUID(RESPONSE_CHAR_UUID),
+                         BLECharacteristic::PROPERTY_READ |
+                         BLECharacteristic::PROPERTY_NOTIFY
+                       );
+
+  // Agregar descriptor BLE2902 para notificaciones
   pResponseCharacteristic->addDescriptor(new BLE2902());
+
+  // Establecer valores iniciales
+  pCommandCharacteristic->setValue("");
+  pResponseCharacteristic->setValue("HUSB238_READY");
 
   // Iniciar servicio
   pService->start();
 
-  // Iniciar advertising
+  // Configurar y iniciar advertising
   BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
-  pAdvertising->addServiceUUID(SERVICE_UUID);
+  pAdvertising->addServiceUUID(BLEUUID(SERVICE_UUID));
   pAdvertising->setScanResponse(false);
   pAdvertising->setMinPreferred(0x0);
   BLEDevice::startAdvertising();

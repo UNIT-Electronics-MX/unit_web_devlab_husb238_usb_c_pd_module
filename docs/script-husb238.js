@@ -90,8 +90,10 @@ async function connectBluetooth() {
 
     // Solicitar dispositivo
     bluetoothDevice = await navigator.bluetooth.requestDevice({
-      filters: [{ name: 'HUSB238' }],
-      optionalServices: [SERVICE_UUID]
+      filters: [{ 
+        name: 'HUSB238',
+        services: [SERVICE_UUID]
+      }]
     });
 
     log(`✅ Dispositivo encontrado: ${bluetoothDevice.name}`, 'success');

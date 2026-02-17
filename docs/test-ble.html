@@ -105,8 +105,10 @@
       try {
         log('🔍 Buscando HUSB238...');
         device = await navigator.bluetooth.requestDevice({
-          filters: [{ name: 'HUSB238' }],
-          optionalServices: [SERVICE_UUID]
+          filters: [{ 
+            name: 'HUSB238',
+            services: [SERVICE_UUID]
+          }]
         });
 
         log('✅ Dispositivo encontrado: ' + device.name);

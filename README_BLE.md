@@ -1,6 +1,16 @@
 # HUSB238 USB-C PD Controller - Web Bluetooth
 
+[![Deploy to GitHub Pages](https://github.com/UNIT-Electronics-MX/unit_web_devlab_husb238_usb_c_pd_module/actions/workflows/deploy-gh-pages.yml/badge.svg)](https://github.com/UNIT-Electronics-MX/unit_web_devlab_husb238_usb_c_pd_module/actions/workflows/deploy-gh-pages.yml)
+[![GitHub Pages](https://img.shields.io/badge/demo-live-brightgreen)](https://unit-electronics-mx.github.io/unit_web_devlab_husb238_usb_c_pd_module/index-husb238.html)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Control del módulo HUSB238 USB-C Power Delivery mediante una aplicación web usando Bluetooth Low Energy (BLE).
+
+## 🌐 Demo en Vivo
+
+**Prueba la aplicación ahora**: [https://unit-electronics-mx.github.io/unit_web_devlab_husb238_usb_c_pd_module/index-husb238.html](https://unit-electronics-mx.github.io/unit_web_devlab_husb238_usb_c_pd_module/index-husb238.html)
+
+> ⚠️ **Requisitos**: Navegador Chrome/Edge y Bluetooth habilitado. Necesitas tener el hardware ESP32 + HUSB238 programado y encendido.
 
 ## 📋 Descripción
 
@@ -54,6 +64,12 @@ Serial: Listo para recibir comandos SCPI
 
 ### 3. Abrir la Aplicación Web
 
+**Opción A - GitHub Pages (Recomendado):**
+```
+Abre: https://unit-electronics-mx.github.io/unit_web_devlab_husb238_usb_c_pd_module/index-husb238.html
+```
+
+**Opción B - Local (archivo):**
 1. Navega a la carpeta `docs/`
 2. Abre el archivo `index-husb238.html` en un navegador compatible:
    - **Chrome** (Desktop/Android)
@@ -62,12 +78,12 @@ Serial: Listo para recibir comandos SCPI
    
    ⚠️ **Nota**: Safari y Firefox no soportan Web Bluetooth actualmente.
 
-3. Si usas un servidor local:
-   ```bash
-   cd docs/
-   python -m http.server 8000
-   ```
-   Luego abre: `http://localhost:8000/index-husb238.html`
+**Opción C - Servidor Local:**
+```bash
+cd docs/
+python -m http.server 8000
+# Abre: http://localhost:8000/index-husb238.html
+```
 
 ## 📱 Uso de la Aplicación Web
 
