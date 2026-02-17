@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HUSB238 - Diagrama del Sistema</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      margin: 0;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 40px;
+      font-size: 2.5em;
+    }
+    .diagram {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      margin: 30px 0;
+    }
+    .layer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .box {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 15px;
+      min-width: 250px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      transition: transform 0.3s;
+    }
+    .box:hover {
+      transform: translateY(-5px);
+    }
+    .box h3 {
+      margin: 0 0 10px 0;
+      font-size: 1.5em;
+    }
+    .box p {
+      margin: 5px 0;
+      opacity: 0.9;
+      font-size: 0.9em;
+    }
+    .arrow {
+      font-size: 3em;
+      color: #667eea;
+      font-weight: bold;
+    }
+    .vertical-arrow {
+      display: flex;
+      justify-content: center;
+      font-size: 3em;
+      color: #667eea;
+    }
+    .web {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    .ble {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    .mcu {
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+    .hardware {
+      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin: 40px 0;
+    }
+    .feature {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 4px solid #667eea;
+    }
+    .feature h4 {
+      color: #667eea;
+      margin-top: 0;
+    }
+    .code-block {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 10px;
+      font-family: 'Courier New', monospace;
+      overflow-x: auto;
+      margin: 20px 0;
+    }
+    .code-block .keyword { color: #569cd6; }
+    .code-block .string { color: #ce9178; }
+    .code-block .comment { color: #6a9955; }
+    .voltage-selector {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    .voltage-btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      border-radius: 8px;
+      font-size: 1.2em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .voltage-btn:hover {
+      background: #764ba2;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔌 Sistema HUSB238 Web Bluetooth</h1>
+    
+    <div class="diagram">
+      <!-- Layer 1: Web App -->
+      <div class="layer">
+        <div class="box web">
+          <h3>📱 Aplicación Web</h3>
+          <p><strong>index-husb238.html</strong></p>
+          <p>Interfaz de usuario</p>
+          <p>Controles interactivos</p>
+          <p>Dashboard en tiempo real</p>
+        </div>
+        <span class="arrow">+</span>
+        <div class="box web">
+          <h3>⚙️ JavaScript</h3>
+          <p><strong>script-husb238.js</strong></p>
+          <p>Web Bluetooth API</p>
+          <p>Gestión de comandos</p>
+          <p>Procesamiento de datos</p>
+        </div>
+      </div>
+
+      <div class="vertical-arrow">↓</div>
+
+      <!-- Layer 2: BLE Communication -->
+      <div class="layer">
+        <div class="box ble">
+          <h3>📡 Comunicación BLE</h3>
+          <p>GATT Server/Client</p>
+          <p>UUIDs personalizados</p>
+          <p>Notificaciones en tiempo real</p>
+          <p>Sin cables - Inalámbrico</p>
+        </div>
+      </div>
+
+      <div class="vertical-arrow">↓</div>
+
+      <!-- Layer 3: MCU -->
+      <div class="layer">
+        <div class="box mcu">
+          <h3>🎛️ ESP32 Microcontrolador</h3>
+          <p><strong>husb238_ble.ino</strong></p>
+          <p>BLE Server</p>
+          <p>Parser SCPI</p>
+          <p>Control I2C</p>
+          <p>Dual: BLE + Serial</p>
+        </div>
+      </div>
+
+      <div class="vertical-arrow">↓</div>
+
+      <!-- Layer 4: Hardware -->
+      <div class="layer">
+        <div class="box hardware">
+          <h3>🔧 HUSB238 Module</h3>
+          <p>USB-C PD Controller</p>
+          <p>I2C Interface</p>
+          <p>Voltajes: 5V - 20V</p>
+          <p>Corriente: 0.5A - 5A</p>
+        </div>
+      </div>
+    </div>
+
+    <h2 style="text-align: center; color: #667eea; margin-top: 50px;">⚡ Selección de Voltajes</h2>
+    <div class="voltage-selector">
+      <button class="voltage-btn">5V</button>
+      <button class="voltage-btn">9V</button>
+      <button class="voltage-btn">12V</button>
+      <button class="voltage-btn">15V</button>
+      <button class="voltage-btn">18V</button>
+      <button class="voltage-btn">20V</button>
+    </div>
+
+    <h2 style="text-align: center; color: #667eea; margin-top: 50px;">✨ Características Principales</h2>
+    <div class="features">
+      <div class="feature">
+        <h4>🌐 Sin Instalación</h4>
+        <p>Solo necesitas un navegador web compatible (Chrome/Edge). No requiere instalar aplicaciones.</p>
+      </div>
+      
+      <div class="feature">
+        <h4>📱 Multi-Plataforma</h4>
+        <p>Funciona en PC, laptops, tablets y smartphones Android.</p>
+      </div>
+      
+      <div class="feature">
+        <h4>⚡ Tiempo Real</h4>
+        <p>Monitoreo instantáneo de voltaje, corriente y estado de conexión.</p>
+      </div>
+      
+      <div class="feature">
+        <h4>🔒 Seguro</h4>
+        <p>Protocolo BLE seguro. Solo dispositivos autorizados pueden conectarse.</p>
+      </div>
+      
+      <div class="feature">
+        <h4>🎯 Preciso</h4>
+        <p>Control exacto de voltajes USB-C Power Delivery según especificación.</p>
+      </div>
+      
+      <div class="feature">
+        <h4>📊 Informativo</h4>
+        <p>Log completo de actividad y comandos enviados/recibidos.</p>
+      </div>
+    </div>
+
+    <h2 style="text-align: center; color: #667eea; margin-top: 50px;">🔌 Conexión Hardware</h2>
+    <div class="code-block">
+<span class="comment">// Conexiones entre ESP32 y HUSB238</span>
+ESP32 GPIO <span class="keyword">6</span>  <span class="string">━━━━━━━━━━━━►</span>  HUSB238 SDA
+ESP32 GPIO <span class="keyword">7</span>  <span class="string">━━━━━━━━━━━━►</span>  HUSB238 SCL
+ESP32 GND       <span class="string">━━━━━━━━━━━━►</span>  HUSB238 GND
+ESP32 3.3V      <span class="string">━━━━━━━━━━━━►</span>  HUSB238 VCC
+    </div>
+
+    <h2 style="text-align: center; color: #667eea; margin-top: 50px;">📝 Comandos SCPI</h2>
+    <div class="code-block">
+<span class="comment">// Comandos disponibles vía BLE o Serial</span>
+
+<span class="keyword">*IDN?</span>              <span class="comment">// Identificación del dispositivo</span>
+<span class="keyword">STAT?</span>              <span class="comment">// Estado de conexión USB-C</span>
+<span class="keyword">PD:LIST?</span>           <span class="comment">// Lista de voltajes disponibles</span>
+<span class="keyword">PD:GET?</span>            <span class="comment">// Voltaje actual</span>
+<span class="keyword">PD:SET</span><span class="string">12</span>          <span class="comment">// Establecer 12V</span>
+<span class="keyword">PD:SWEEP</span>           <span class="comment">// Probar todos los voltajes</span>
+<span class="keyword">CURR:GET?</span>          <span class="comment">// Corriente actual</span>
+<span class="keyword">CURR:MAX?</span><span class="string">12</span>       <span class="comment">// Corriente máxima @ 12V</span>
+    </div>
+
+    <h2 style="text-align: center; color: #667eea; margin-top: 50px;">🚀 Inicio Rápido</h2>
+    <div class="features">
+      <div class="feature">
+        <h4>Paso 1: Hardware</h4>
+        <p>✅ Conectar ESP32 a HUSB238 vía I2C</p>
+        <p>✅ Conectar cargador USB-C PD</p>
+      </div>
+      
+      <div class="feature">
+        <h4>Paso 2: Firmware</h4>
+        <p>📤 Cargar husb238_ble.ino en ESP32</p>
+        <p>🔍 Verificar en Monitor Serial</p>
+      </div>
+      
+      <div class="feature">
+        <h4>Paso 3: Web App</h4>
+        <p>🌐 Abrir index-husb238.html</p>
+        <p>🔗 Click en "Conectar BLE"</p>
+      </div>
+      
+      <div class="feature">
+        <h4>Paso 4: ¡Usar!</h4>
+        <p>⚡ Escanear voltajes disponibles</p>
+        <p>🎯 Seleccionar voltaje deseado</p>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 50px; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; color: white;">
+      <h2 style="color: white; margin-top: 0;">🎉 ¡Todo Listo!</h2>
+      <p style="font-size: 1.2em;">Tu sistema HUSB238 con control Bluetooth está completamente implementado</p>
+      <p>Desarrollado por <strong>UNIT Electronics</strong> - DevLab</p>
+    </div>
+  </div>
+
+  <script>
+    // Animación simple de botones
+    document.querySelectorAll('.voltage-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        this.style.background = '#43e97b';
+        setTimeout(() => {
+          this.style.background = '#667eea';
+        }, 300);
+      });
+    });
+  </script>
+</body>
+</html>

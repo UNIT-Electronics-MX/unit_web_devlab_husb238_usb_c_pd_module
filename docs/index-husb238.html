@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HUSB238 - USB-C PD Controller</title>
+  <meta name="description" content="Control USB-C Power Delivery con HUSB238 via Bluetooth">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .status-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .status-connected { background-color: #10b981; }
+    .status-connecting { background-color: #f59e0b; animation: pulse 2s infinite; }
+    .status-disconnected { background-color: #ef4444; }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .voltage-card {
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .voltage-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .voltage-card.selected {
+      border: 2px solid #3b82f6;
+      background-color: #eff6ff;
+    }
+    
+    .voltage-card.available {
+      border: 2px solid #10b981;
+    }
+    
+    .voltage-card.unavailable {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background-color: #f3f4f6;
+    }
+    
+    @media (max-width: 768px) {
+      .mobile-compact {
+        padding: 0.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+  <!-- Header -->
+  <header class="bg-white shadow-sm border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">HUSB238</h1>
+          <p class="text-sm text-gray-600">USB-C Power Delivery Controller</p>
+        </div>
+        
+        <!-- Connection Status -->
+        <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-2">
+            <span class="status-indicator status-disconnected" id="status-indicator"></span>
+            <span id="connection-status" class="text-sm font-medium text-red-600">Desconectado</span>
+          </div>
+          
+          <!-- Connection Buttons -->
+          <div class="flex space-x-2">
+            <button id="connect-btn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+              Conectar BLE
+            </button>
+            <button id="disconnect-btn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors hidden">
+              Desconectar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    
+    <!-- Device Status Card -->
+    <div class="bg-white rounded-lg shadow mb-6 p-6">
+      <h2 class="text-lg font-semibold mb-4">Estado del Dispositivo</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <div class="text-sm text-gray-600">Conexión USB-C</div>
+          <div id="attachment-status" class="text-xl font-bold text-gray-400">---</div>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <div class="text-sm text-gray-600">Voltaje Actual</div>
+          <div id="current-voltage" class="text-xl font-bold text-blue-600">---</div>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <div class="text-sm text-gray-600">Corriente Actual</div>
+          <div id="current-current" class="text-xl font-bold text-green-600">---</div>
+        </div>
+      </div>
+      <div class="mt-4">
+        <button id="refresh-status-btn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+          🔄 Actualizar Estado
+        </button>
+      </div>
+    </div>
+
+    <!-- Voltage Selection Card -->
+    <div class="bg-white rounded-lg shadow mb-6 p-6">
+      <h2 class="text-lg font-semibold mb-4">Selección de Voltaje USB-C PD</h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4" id="voltage-grid">
+        <!-- Voltage cards will be inserted here by JavaScript -->
+      </div>
+      <div class="mt-4 flex space-x-2">
+        <button id="scan-voltages-btn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+          🔍 Escanear Voltajes Disponibles
+        </button>
+        <button id="sweep-btn" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+          ⚡ Sweep Todos los Voltajes
+        </button>
+      </div>
+    </div>
+
+    <!-- Power Information Card -->
+    <div class="bg-white rounded-lg shadow mb-6 p-6">
+      <h2 class="text-lg font-semibold mb-4">Información de Potencia</h2>
+      <div id="power-info" class="text-sm text-gray-600">
+        Selecciona un voltaje para ver la corriente máxima disponible
+      </div>
+    </div>
+
+    <!-- Activity Log Card -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold">Registro de Actividad</h2>
+        <button id="clear-log-btn" class="text-sm text-red-600 hover:text-red-800">
+          🗑️ Limpiar
+        </button>
+      </div>
+      <div id="activity-log" class="bg-gray-50 rounded p-4 h-64 overflow-y-auto font-mono text-xs">
+        <!-- Activity log messages will appear here -->
+      </div>
+    </div>
+  </main>
+
+  <script src="script-husb238.js"></script>
+</body>
+</html>
